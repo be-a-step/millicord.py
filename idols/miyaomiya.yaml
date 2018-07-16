@@ -2,16 +2,16 @@
 name: 宮尾美也
 
 #トークンファイルの名前
-tokenfile: ./miyaomiya.token
+tokenfile: envs/miyaomiya.env
 
 #Pをどう呼ぶか入力する箇所
 P-call: Pさん
 
 #出勤時刻
-attending_time: 08:00:00
+attending_time: '08:00:00'
 
 #退勤時刻 
-leaving_time: 19:00:00 
+leaving_time: '19:00:00'
 
 #アイドルの行動設定（rooms: 実行するチャンネル, lines:セリフ）
 actions:
@@ -20,7 +20,6 @@ actions:
     greeting:
         rooms: 
             - 控え室
-            - dev_控え室
         lines:
             attending: おはようございます〜
             leaving: それでは、お疲れ様でした〜
@@ -29,10 +28,9 @@ actions:
         time_keep:
             rooms:
                 - レッスンルーム
-                - dev_レッスンルーム
             lines: 
                 accept:         お〜、レッスンですか。いいですよ〜。
                 busy":          すみません、少し待っててもらってもいいですか〜
-                endtime":       では、{hour}時{minute}分まで一緒に頑張りましょう〜
-                notify_half":   {names}あと半分くらいですね〜、もう一踏ん張りしましょう
-                notify_end":    {names}時間になりましたね〜、お疲れ様でした
+                endtime":       'では、{hour}時{minute}分まで一緒に頑張りましょう〜'
+                notify_half":   '{names}あと半分くらいですね〜、もう一踏ん張りしましょう'
+                notify_end":    '{names}時間になりましたね〜、お疲れ様でした'
