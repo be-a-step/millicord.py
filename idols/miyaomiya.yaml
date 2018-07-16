@@ -24,13 +24,13 @@ actions:
             attending: おはようございます〜
             leaving: それでは、お疲れ様でした〜
 
-        #タイムキーパー用の設定",
-        time_keep:
-            rooms:
-                - レッスンルーム
-            lines: 
-                accept:         お〜、レッスンですか。いいですよ〜。
-                busy":          すみません、少し待っててもらってもいいですか〜
-                endtime":       'では、{hour}時{minute}分まで一緒に頑張りましょう〜'
-                notify_half":   '{names}あと半分くらいですね〜、もう一踏ん張りしましょう'
-                notify_end":    '{names}時間になりましたね〜、お疲れ様でした'
+    #タイムキーパー用の設定",
+    time_keep:
+        rooms:
+            - レッスンルーム
+        lines: 
+            accept:         お〜、レッスンですか。いいですよ〜。
+            busy":          すみません、少し待っててもらってもいいですか〜
+            endtime:       'では、{hour}時{minute}分まで一緒に頑張りましょう〜'
+            notify_half:   '{names}あと半分くらいですね〜、もう一踏ん張りしましょう'
+            notify_end:    '{names}時間になりましたね〜、お疲れ様でした'
