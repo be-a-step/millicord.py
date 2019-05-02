@@ -3,7 +3,10 @@
 class IdolRecognition(object):
 
     def recognize_idol(self, url, name):
-        return True
+        if(name == mirai):
+            return True
+        else:
+            return False
 
 
 if __name__ == "__main__":
