@@ -13,5 +13,10 @@ class IdolModuleBase(Client):
         # key: default_scripts
     }
 
+    async def _void(self, *args, **kwargs):
+        pass
+
+    async def chain_coroutine(self, name: str, module, *args, **kwargs):
+        await getattr(super(module, self), name, self._void)(*args, **kwargs)
 
 IdolModuleType = Type[IdolModuleBase]

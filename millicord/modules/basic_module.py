@@ -4,7 +4,6 @@ from discord import Message
 from discord.abc import Messageable
 from .utils.module_base import IdolModuleBase
 
-
 class LoggingModule(IdolModuleBase):
     # ログイン時の処理
     async def on_ready(self):
@@ -12,8 +11,7 @@ class LoggingModule(IdolModuleBase):
         print(self.user.name)
         print(self.user.id)
         print('------')
-        if hasattr(super(), 'on_ready'):
-            await super().on_ready()
+        await self.chain_coroutine('on_ready', LoggingModule)
 
     # メッセージ受信時の処理
     async def on_message(self, message: Message):
@@ -23,8 +21,7 @@ class LoggingModule(IdolModuleBase):
         message_receivers = re.findall("\<@\!?(.+?)\>", message.content)
         print("To:", *message_receivers)
         print(message.content)
-        if hasattr(super(), 'on_message'):
-            await super().on_message(message)
+        await self.chain_coroutine('on_message', LoggingModule, message)
 
 
 class MessageSenderBaseModule(IdolModuleBase):
@@ -37,6 +34,7 @@ class MessageSenderBaseModule(IdolModuleBase):
         else:
             send_text = message_text
         await channel.send(send_text)
+        await self.chain_coroutine('send_message', MessageSenderBaseModule, channel, message_text, message_receivers)
 
 
 class PCallModule(IdolModuleBase):
@@ -61,12 +59,10 @@ class OnMentionedModule(IdolModuleBase):
         if self.user.id in message_receiver_ids:
             await self.on_mentioned(message)
         else:
-            if hasattr(super(), 'on_message'):
-                await super().on_message(message)
+            await self.chain_coroutine('on_message', OnMentionedModule, message)
 
     async def on_mentioned(self, message: Message):
-        if hasattr(super(), 'on_mentioned'):
-            await super().on_mentioned(message)
+        await self.chain_coroutine('on_mentioned', OnMentionedModule, message)
 
 
 class EchoModule(IdolModuleBase):
@@ -87,3 +83,6 @@ class EchoModule(IdolModuleBase):
         if self.user.id == message.author.id:
             return
         await self.send_message(message.channel, self.find_script(EchoModule, 'message'), [message.author.id])
+
+class IdolStateModule(IdolModuleBase):
+    pass
