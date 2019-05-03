@@ -1,8 +1,6 @@
-from millicord.idol import IdolManager
-import os
+import millicord
 
-IDOLS_DIR = os.path.join(os.path.dirname(__file__), 'idols')
-
-manager = IdolManager()
-manager.load_from_directory(IDOLS_DIR)
-manager.loop()
+token =
+millicord.generate_idol_folder('./test_idol', token, [], overwrite=True)
+builder = millicord.IdolBuilder.load_from_folder('./test_idol/')
+builder.build_and_run()

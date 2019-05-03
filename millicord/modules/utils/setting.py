@@ -15,11 +15,11 @@ class YamlBase(UserDict):
         with Path(path).open() as f:
             return cls(yaml.load(f))
 
-    def write_to_yaml(self, path: Union[Path, str], default_flow_style=True, overwrite=False):
+    def write_to_yaml(self, path: Union[Path, str], default_flow_style=False, overwrite=False):
         path = Path(path)
         if (not overwrite) and path.exists():
             raise FileExistsError(path)
-        with path.open() as f:
+        with path.open('w') as f:
             f.write(yaml.dump(self.data, default_flow_style=default_flow_style))
 
     def find_by_path(self, path: Union[Path, str]) -> YamlItemType:

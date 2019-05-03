@@ -18,32 +18,40 @@ class IdolModules(object):
     def load_from_yaml(cls, path: Union[Path, str]):
         idol_modules = cls()
         with Path(path).open() as f:
-            for module_name in yaml.load(f).keys():
+            module_dict = yaml.load(f)
+            for module_name in module_dict.get('internal', []):
+                if module_name == 'IdolBase':
+                    continue
                 module = getattr(modules, module_name, None)
                 if module is None:
-                    # self.load_from_external_module() # todo: implement
                     raise ValueError('No module named {} exists'.format(module_name))
                 idol_modules.add(module)
+            # todo: implement external modules loading
+            # for module_name in modules.get('external', {}).keys():
+            #     module = getattr(modules, module_name, None)
+            #     if module is None:
+            #         raise ValueError('No module named {} exists'.format(module_name))
+            #     idol_modules.add(module)
             return idol_modules
 
-    def write_to_yaml(self, path: Union[Path, str], default_flow_style=True, overwrite=False):
+    def write_to_yaml(self, path: Union[Path, str], default_flow_style=False, overwrite=False):
         path = Path(path)
         if (not overwrite) and path.exists():
             raise FileExistsError(path)
-        with path.open() as f:
+        with path.open('w') as f:
             # todo: implement external
             f.write(yaml.dump({'internal': self.module_identifiers}, default_flow_style=default_flow_style))
 
     def generate_default_config(self) -> IdolConfig:
         conf = IdolConfig()
         for module in self.modules:
-            conf[get_module_identifier(module)] = module.DEFAULT_CONFIG.items()
+            conf[get_module_identifier(module)] = module.DEFAULT_CONFIG
         return conf
 
     def generate_default_script(self) -> IdolScript:
         script = IdolScript()
         for module in self.modules:
-            script[get_module_identifier(module)] = module.DEFAULT_SCRIPT.items()
+            script[get_module_identifier(module)] = module.DEFAULT_SCRIPT
         return script
 
     def find(self, key_identifier, return_idx=False) -> \
