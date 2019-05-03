@@ -5,6 +5,7 @@ from .idol_modules import IdolModules
 from .modules.utils.setting import IdolConfig, IdolScript
 from .modules.utils.idol_exceptions import IdolConfigError, IdolScriptError, IdolModuleError
 from .modules.utils.module_base import IdolModuleType
+from .modules.utils.functions import get_module_identifier
 
 
 class IdolBuilder(object):
@@ -42,9 +43,9 @@ class IdolBuilder(object):
         for module in self.modules.modules:
             if sum(rm not in self.modules for rm in module.MODULE_REQUIREMENTS) > 0:
                 raise IdolModuleError()
-            if sum(self.script.get(dsk, None) is None for dsk in module.DEFAULT_SCRIPT.keys()) > 0:
+            if sum(self.script[get_module_identifier(module)].get(dsk, None) is None for dsk in module.DEFAULT_SCRIPT.keys()) > 0:
                 raise IdolScriptError()
-            if sum(self.config.get(dck, None) is None for dck in module.DEFAULT_CONFIG.keys()) > 0:
+            if sum(self.config[get_module_identifier(module)].get(dck, None) is None for dck in module.DEFAULT_CONFIG.keys()) > 0:
                 raise IdolConfigError()
         return True
 

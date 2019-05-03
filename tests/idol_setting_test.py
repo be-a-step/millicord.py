@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from millicord.idol import IdolSetting, IdolManager, Idol
+from millicord.idol import IdolSetting, IdolScheduler, IdolProcess
 import datetime
 
 
@@ -44,7 +44,7 @@ class TestIdolSetting(unittest.TestCase):
 
 class TestIdolManager(unittest.TestCase):
     def setUp(self):
-        self.manager = IdolManager()
+        self.manager = IdolScheduler()
 
     def test_load(self):
         self.manager.load_idol(TEST_YML)

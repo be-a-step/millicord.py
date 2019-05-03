@@ -45,13 +45,15 @@ class IdolModules(object):
     def generate_default_config(self) -> IdolConfig:
         conf = IdolConfig()
         for module in self.modules:
-            conf[get_module_identifier(module)] = module.DEFAULT_CONFIG
+            if len(module.DEFAULT_CONFIG):
+                conf[get_module_identifier(module)] = module.DEFAULT_CONFIG
         return conf
 
     def generate_default_script(self) -> IdolScript:
         script = IdolScript()
         for module in self.modules:
-            script[get_module_identifier(module)] = module.DEFAULT_SCRIPT
+            if len(module.DEFAULT_SCRIPT):
+                script[get_module_identifier(module)] = module.DEFAULT_SCRIPT
         return script
 
     def find(self, key_identifier, return_idx=False) -> \
@@ -61,21 +63,16 @@ class IdolModules(object):
                 return (i, self.modules[i]) if return_idx else self.modules[i]
         return (None, None) if return_idx else None
 
-    def add(self, new_module: IdolModuleType, update_if_conflict=True):
+    def add(self, new_module: IdolModuleType):
         if not issubclass(new_module, IdolModuleBase):
             raise ValueError('Invalid Object {}.'.format(repr(new_module)))
-        existing_module, i = self.find(get_module_identifier(new_module), True)
-        if existing_module:
-            if update_if_conflict:
-                self.modules[i] = new_module
-            else:
-                raise IdolModuleError(
-                    'Module Conflict: "{0}" and "{1}"'.format(repr(existing_module), repr(new_module))
-                )
-        for req in new_module.MODULE_REQUIREMENTS:
-            self.add(req, update_if_conflict)
+        if new_module in self:
+            return
+        print('add module:', new_module.__name__)
         self.modules.append(new_module)
         self.module_identifiers.append(get_module_identifier(new_module))
+        for req in new_module.MODULE_REQUIREMENTS:
+            self.add(req)
 
     def to_tuple(self) -> Tuple:
         return tuple(self.modules)

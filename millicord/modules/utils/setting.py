@@ -25,11 +25,12 @@ class YamlBase(UserDict):
     def find_by_path(self, path: Union[Path, str]) -> YamlItemType:
         tmp = self.data
         for part in Path(path).parts:
+            print(part, tmp)
             if part == '/':
                 continue
             if part not in tmp:
                 return None
-            tmp = self[part]
+            tmp = tmp[part]
         return tmp
 
 

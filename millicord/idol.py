@@ -31,5 +31,5 @@ def generate_idol_folder(path: Union[Path, str], token: str, module_list: List[I
         f.write(token)
     modules.write_to_yaml(path / 'modules.yaml', overwrite=overwrite)
     print(modules.generate_default_script())
-    modules.generate_default_script().write_to_yaml(path / 'config.yaml', overwrite=overwrite)
-    modules.generate_default_config().write_to_yaml(path / 'script.yaml', overwrite=overwrite)
+    modules.generate_default_script().write_to_yaml(path / 'script.yaml', overwrite=overwrite)
+    modules.generate_default_config().write_to_yaml(path / 'config.yaml', overwrite=overwrite)
