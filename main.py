@@ -1,8 +1,15 @@
 import millicord
 from millicord.modules import *
 
-token =
-millicord.generate_idol_folder('./test_idol', token, [OnMentionedModule, PCallModule, LoggingModule, EchoModule], overwrite=True)
-builder = millicord.IdolBuilder.load_from_folder('./test_idol/')
-print(builder.modules.modules)
-builder.build_and_run()
+token = 'replace this string to valid token'
+idol = millicord.generate_idol_folder('./test_idol',
+                                      token,
+                                      [LoggingModule,
+                                       IdolStateModule,
+                                       OnMentionedModule,
+                                       IdolStateModule,
+                                       PCallModule,
+                                       TimeKeepingModule,
+                                       RandomResposeModule],
+                                      overwrite=True)
+idol.run(token)

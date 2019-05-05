@@ -18,13 +18,14 @@ class IdolModules(object):
     def load_from_yaml(cls, path: Union[Path, str]):
         idol_modules = cls()
         with Path(path).open() as f:
-            module_dict = yaml.load(f)
+            module_dict = yaml.load(f, Loader=yaml.FullLoader)
             for module_name in module_dict.get('internal', []):
                 if module_name == 'IdolBase':
                     continue
                 module = getattr(modules, module_name, None)
                 if module is None:
-                    raise ValueError('No module named {} exists'.format(module_name))
+                    raise ValueError(
+                        'No module named {} exists'.format(module_name))
                 idol_modules.add(module)
             # todo: implement external modules loading
             # for module_name in modules.get('external', {}).keys():
@@ -34,13 +35,18 @@ class IdolModules(object):
             #     idol_modules.add(module)
             return idol_modules
 
-    def write_to_yaml(self, path: Union[Path, str], default_flow_style=False, overwrite=False):
+    def write_to_yaml(self,
+                      path: Union[Path,
+                                  str],
+                      default_flow_style=False,
+                      overwrite=False):
         path = Path(path)
         if (not overwrite) and path.exists():
             raise FileExistsError(path)
         with path.open('w') as f:
             # todo: implement external
-            f.write(yaml.dump({'internal': self.module_identifiers}, default_flow_style=default_flow_style))
+            f.write(yaml.dump({'internal': self.module_identifiers},
+                              default_flow_style=default_flow_style))
 
     def generate_default_config(self) -> IdolConfig:
         conf = IdolConfig()

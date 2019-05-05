@@ -1,7 +1,10 @@
 from datetime import date, datetime
 from typing import Union, Type
 
-# 引数のtypingは本来 module: Union[IdolModuleType, IdolBaseType] と書くべきだけど、循環参照が起きるのでひとまずこうしておく
+# 引数のtypingは本来 module: Union[IdolModuleType, IdolBaseType]
+# と書くべきだけど、循環参照が起きるのでひとまずこうしておく
+
+
 def get_module_identifier(module: Type) -> str:
     return module.__name__
 
