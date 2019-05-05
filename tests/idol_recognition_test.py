@@ -1,6 +1,6 @@
 import unittest
 
-from millicord.recognition.idol_recognition import IdolRecognition
+from millicord.modules.recognition.idol_recognition import IdolRecognition
 
 class IdolRecognitionTest(unittest.TestCase):
     def setUp(self):
@@ -11,3 +11,6 @@ class IdolRecognitionTest(unittest.TestCase):
         name = 'mirai'
         is_mirai = self.ir.recognize_idol(url,name)
         self.assertEqual(True, is_mirai)
+
+if __name__ == "__main__":
+    unittest.main()
