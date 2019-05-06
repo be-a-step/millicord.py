@@ -1,7 +1,7 @@
 # pycharm
 .idea
 #トークン
-*.env
+*.token
 ### https://raw.github.com/github/gitignore/773eca0e04e9198ce0934cbec9a0222c31a4e1cb/Python.gitignore
 
 # Byte-compiled / optimized / DLL files
