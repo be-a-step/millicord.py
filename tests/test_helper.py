@@ -1,6 +1,7 @@
 import argparse
 import unittest
 from pathlib import Path
+import os
 
 parser = argparse.ArgumentParser(description='テスト実行用スクリプト')
 
@@ -16,6 +17,8 @@ TOKEN_REQUIRED_IDOLS = ['idol_base_test_idol', 'module_base_test_idol']
 if __name__ == '__main__':
     if args.deploy_token is not None:
         for idol in TOKEN_REQUIRED_IDOLS:
+            if not (TEST_IDOLS_DIR / idol).exists():
+                os.makedirs(str(TEST_IDOLS_DIR / idol))
             with (TEST_IDOLS_DIR / idol / '.token').open('w') as f:
                 f.write(args.deploy_token)
                 print('export token to:')
