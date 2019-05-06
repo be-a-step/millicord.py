@@ -74,11 +74,11 @@ class IdolModules(object):
             raise ValueError('Invalid Object {}.'.format(repr(new_module)))
         if new_module in self:
             return
+        for req in new_module.MODULE_REQUIREMENTS:
+            self.add(req)
         print('add module:', new_module.__name__)
         self.modules.append(new_module)
         self.module_identifiers.append(get_module_identifier(new_module))
-        for req in new_module.MODULE_REQUIREMENTS:
-            self.add(req)
 
     def to_tuple(self) -> Tuple:
         return tuple(self.modules)
