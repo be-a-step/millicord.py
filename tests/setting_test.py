@@ -25,7 +25,7 @@ class TestYamlBase(unittest.TestCase):
                          'SampleModule1', 'SampleModule2'])
         mod1 = self.sample_yaml['SampleModule1']
         self.assertEqual(
-            mod1, self.SAMPLE_YAML_DICT)
+            mod1, self.SAMPLE_YAML_DICT['SampleModule1'])
         mod2 = self.sample_yaml['SampleModule2']
         self.assertEqual(mod2, {'param': 'val'})
 
