@@ -35,7 +35,7 @@ class MessageSenderBaseModule(IdolModuleBase):
         return " ".join(["<@{0}>".format(uid)
                          for uid in message_receivers] + [message_text])
 
-    async def send_message(self, channel: Messageable, message_text: str, message_receivers: Optional[list, str, int] = None):
+    async def send_message(self, channel: Messageable, message_text: str, message_receivers: Union[list, str, int, None] = None):
         if message_receivers is None:
             send_text = message_text
         elif isinstance(message_receivers, (int, str)):
