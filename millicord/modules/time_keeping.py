@@ -35,7 +35,7 @@ class TimeKeepingModule(IdolModuleBase):
         hour, minute = parse_time(message.content)
 
         if hour == 0 and minute == 0:
-            await self.chain_super('on_mentioned', TimeKeepingModule)(message)
+            await self.chain_super_coroutine('on_mentioned', TimeKeepingModule)(message)
             return
         self.to_busy()
         # 時間の取得

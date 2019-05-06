@@ -13,7 +13,7 @@ class LoggingModule(IdolModuleBase):
         print(self.user.name)
         print(self.user.id)
         print('------')
-        await self.chain_super('on_ready', LoggingModule)()
+        await self.chain_super_coroutine('on_ready', LoggingModule)()
 
     # メッセージ受信時の処理
     async def on_message(self, message: Message):
@@ -23,19 +23,23 @@ class LoggingModule(IdolModuleBase):
         message_receivers = re.findall(r"\<@\!?(.+?)\>", message.content)
         print("To:", *message_receivers)
         print(message.content)
-        await self.chain_super('on_message', LoggingModule)(message)
+        await self.chain_super_coroutine('on_message', LoggingModule)(message)
 
     # async def on_mentioned(self, message: Message):
-    #     await self.chain_super('on_mentioned', LoggingModule)(message)
+    # await self.chain_super_coroutine('on_mentioned', LoggingModule)(message)
 
 
 class MessageSenderBaseModule(IdolModuleBase):
     def mention_formatter(
             self, message_receivers: List[Union[int, str]], message_text: str) -> str:
-        return " ".join(["<@{0}>".format(uid)
-                         for uid in message_receivers] + [message_text])
+        formatted_text = " ".join(["<@{0}>".format(uid)
+                                   for uid in message_receivers] + [message_text])
+        args, kwargs = self.chain_super_function(
+            'mention_formatter',
+            MessageSenderBaseModule)(message_receivers, formatted_text)
+        return kwargs.get('formatted_text', args[1] if len(args) > 1 else None)
 
-    async def send_message(self, channel: Messageable, message_text: str, message_receivers: Optional[list, str, int] = None):
+    async def send_message(self, channel: Messageable, message_text: str, message_receivers: Union[list, str, int, None] = None):
         if message_receivers is None:
             send_text = message_text
         elif isinstance(message_receivers, (int, str)):
@@ -47,7 +51,7 @@ class MessageSenderBaseModule(IdolModuleBase):
             raise ValueError(
                 'Invalid message receivers passed: {}'.format(message_receivers))
         await channel.send(send_text)
-        await self.chain_super('send_message', MessageSenderBaseModule)(channel, message_text, message_receivers)
+        await self.chain_super_coroutine('send_message', MessageSenderBaseModule)(channel, message_text, message_receivers)
 
 
 class PCallModule(IdolModuleBase):
@@ -62,8 +66,14 @@ class PCallModule(IdolModuleBase):
             self,
             message_receivers: list,
             message_text: str) -> str:
-        return " ".join(["<@{0}>{1}".format(uid, self.find_config(
-            PCallModule, "p-call")) for uid in message_receivers] + [message_text])
+        formatted_text = re.sub(
+            r"(<@\d+>)",
+            r"\1" + self.find_config(PCallModule, "p-call"),
+            message_text
+        )
+        return self.chain_super_function(
+            'mention_formatter',
+            PCallModule)(message_receivers, formatted_text)
 
 
 # メッセージ受信時の処理
@@ -71,9 +81,9 @@ class OnMentionedModule(IdolModuleBase):
     async def on_message(self, message: Message):
         # botが呼ばれていたらon_mentionedへ
         if str(self.user.id) in re.findall(r"\<@\!?(.+?)\>", message.content):
-            await self.chain_super('on_mentioned', OnMentionedModule)(message)
+            await self.chain_super_coroutine('on_mentioned', OnMentionedModule)(message)
         else:
-            await self.chain_super('on_message', OnMentionedModule)(message)
+            await self.chain_super_coroutine('on_message', OnMentionedModule)(message)
 
 
 class EchoModule(IdolModuleBase):
@@ -127,13 +137,13 @@ class IdolStateModule(IdolModuleBase):
         if self.is_busy():
             pass
         else:
-            await self.chain_super('on_message', IdolStateModule)(message)
+            await self.chain_super_coroutine('on_message', IdolStateModule)(message)
 
     async def on_mentioned(self, message: Message):
         if self.is_busy():
             await self.send_message(message.channel, self.find_script(IdolStateModule, 'busy_apologize'), message.author.id)
         else:
-            await self.chain_super('on_mentioned', IdolStateModule)(message)
+            await self.chain_super_coroutine('on_mentioned', IdolStateModule)(message)
 
 
 class RandomResposeModule(IdolModuleBase):
