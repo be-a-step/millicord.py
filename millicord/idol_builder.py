@@ -2,18 +2,19 @@ from typing import Union, Optional
 from pathlib import Path
 import types
 from .idol_modules import IdolModules
-from .modules.utils.setting import IdolConfig, IdolScript, IdolScriptType, IdolConfigType
-from .modules.utils.idol_exceptions import IdolConfigError, IdolScriptError, IdolModuleError
+from .modules.utils.setting import IdolConfig, IdolScript
+from .modules.utils.idol_exceptions import IdolConfigError, IdolScriptError, IdolModuleError, IdolBaseError
 from .modules.utils.module_base import IdolModuleType
+from .modules.utils.idol_base import IdolBase
 from .modules.utils.functions import get_module_identifier
+import inspect
 
 
 class IdolBuilder(object):
     def __init__(self, token: Optional[str] = None, name: Optional[str] = None,
-                 modules: Optional[IdolModuleType] = None,
-                 script: Optional[IdolScriptType] = None,
-                 config: Optional[IdolConfigType] = None):
-        self.path = None
+                 modules: Optional[IdolModules] = None,
+                 script: Optional[IdolScript] = None,
+                 config: Optional[IdolConfig] = None):
         self.name = name
         self.token = token
         self.modules = modules or IdolModules()
@@ -43,14 +44,25 @@ class IdolBuilder(object):
         self.config = IdolConfig.load_from_yaml(path)
 
     def build_check(self):
+        if not (inspect.isclass(self.modules.modules[0])
+                and issubclass(self.modules.modules[0], IdolBase)):
+            raise IdolBaseError()
         for module in self.modules.modules:
             if sum(rm not in self.modules for rm in module.MODULE_REQUIREMENTS) > 0:
                 raise IdolModuleError()
-            if sum(self.script[get_module_identifier(module)].get(
-                    dsk, None) is None for dsk in module.DEFAULT_SCRIPT.keys()) > 0:
+            if sum(
+                self.script.get(
+                    get_module_identifier(module),
+                    {}
+                ).get(dsk, None) is None
+                    for dsk in module.DEFAULT_SCRIPT.keys()) > 0:
                 raise IdolScriptError()
-            if sum(self.config[get_module_identifier(module)].get(
-                    dck, None) is None for dck in module.DEFAULT_CONFIG.keys()) > 0:
+            if sum(
+                self.config.get(
+                    get_module_identifier(module),
+                    {}
+                ).get(dck, None) is None
+                    for dck in module.DEFAULT_CONFIG.keys()) > 0:
                 raise IdolConfigError()
         return True
 

@@ -16,3 +16,7 @@ class IdolConfigError(IdolBuildError):
 
 class IdolModuleError(IdolBuildError):
     pass
+
+
+class IdolBaseError(IdolBuildError):
+    pass
