@@ -28,7 +28,8 @@ class IdolBuilder(object):
         if not path.is_dir():
             raise ValueError('You must pass a path of an existing directory.')
         builder.name = name or path.stem
-        builder.token = (path / '.token').open().read().strip()
+        with (path / '.token').open() as f:
+            builder.token = f.read().strip()
         builder.load_modules_from_yaml(path / 'modules.yaml')
         builder.load_config_from_yaml(path / 'config.yaml')
         builder.load_script_from_yaml(path / 'script.yaml')
@@ -66,13 +67,13 @@ class IdolBuilder(object):
                 raise IdolConfigError()
         return True
 
-    def build(self):
+    def build(self, loop=None):
         self.build_check()
         idol_cls = types.new_class(self.name, self.modules.to_tuple())
-        return idol_cls(self.config, self.script)
+        return idol_cls(self.config, self.script, loop=loop)
 
-    def build_and_run(self):
-        self.build().run(self.token)
+    def build_and_run(self, loop=None):
+        self.build(loop=loop).run(self.token)
 
     def add_module(self, module: IdolModuleType):
         self.modules.add(module)

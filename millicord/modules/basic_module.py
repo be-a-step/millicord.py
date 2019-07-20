@@ -6,10 +6,11 @@ from discord.abc import Messageable
 from .utils.module_base import IdolModuleBase
 
 
+# todo: ロギングを各モジュールに移譲する
 class LoggingModule(IdolModuleBase):
     # ログイン時の処理
     async def on_ready(self):
-        print('Logged in as')  # todo: print debug -> logger debug
+        print('Logged in as')
         print(self.user.name)
         print(self.user.id)
         print('------')

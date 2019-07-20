@@ -12,8 +12,7 @@ from .idol_builder import IdolBuilder
 #   ├ config.yaml
 #   ├ modules.yaml
 #   └ script.yaml
-def generate_idol_folder(path: Union[Path,
-                                     str],
+def generate_idol_folder(path: Union[Path, str],
                          token: str,
                          module_list: List[IdolModuleType],
                          overwrite: bool = False):

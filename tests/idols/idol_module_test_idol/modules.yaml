@@ -1,0 +1,9 @@
+internal:
+- IdolBase
+- LoggingModule
+- MessageSenderBaseModule
+- PCallModule
+- OnMentionedModule
+- IdolStateModule
+- TimeKeepingModule
+- RandomResposeModule
