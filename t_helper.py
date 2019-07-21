@@ -14,7 +14,9 @@ TEST_IDOLS_DIR = TEST_DIR / 'idols'
 TOKEN_REQUIRED_IDOLS = [
     'idol_base_test_idol',
     'module_base_test_idol',
-    'idol_test_token'
+    'idol_test_token',
+    'idol_builder_test_idol',
+    'idol_module_test_idol'
 ]
 
 
