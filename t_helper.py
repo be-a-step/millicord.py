@@ -9,7 +9,7 @@ parser.add_argument('-r', '--run', action='store_true', help='テスト実行')
 parser.add_argument('-t', '--deploy-token', help='テストで使用するidolのトークンをdeploy')
 args = parser.parse_args()
 
-TEST_DIR = Path(__file__).parent
+TEST_DIR = Path(__file__).parent / "tests"
 TEST_IDOLS_DIR = TEST_DIR / 'idols'
 TOKEN_REQUIRED_IDOLS = [
     'idol_base_test_idol',
