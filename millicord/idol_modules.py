@@ -7,6 +7,7 @@ from .modules.utils.idol_base import IdolBase
 from .modules.utils.setting import IdolConfig, IdolScript
 from . import modules
 from .modules.utils.functions import get_module_identifier
+import inspect
 
 
 class IdolModules(object):
@@ -62,15 +63,9 @@ class IdolModules(object):
                 script[get_module_identifier(module)] = module.DEFAULT_SCRIPT
         return script
 
-    def find(self, key_identifier, return_idx=False) -> \
-            Union[Tuple[Optional[int], Optional[IdolModuleType]], IdolModuleType, None]:
-        for i, module_identifier in enumerate(self.module_identifiers):
-            if key_identifier == module_identifier:
-                return (i, self.modules[i]) if return_idx else self.modules[i]
-        return (None, None) if return_idx else None
-
     def add(self, new_module: IdolModuleType):
-        if not issubclass(new_module, IdolModuleBase):
+        if not (inspect.isclass(new_module)
+                and issubclass(new_module, IdolModuleBase)):
             raise ValueError('Invalid Object {}.'.format(repr(new_module)))
         if new_module in self:
             return
@@ -84,8 +79,11 @@ class IdolModules(object):
         return tuple(self.modules)
 
     def __contains__(self, item):
-        if issubclass(item, IdolModuleBase):
+        if inspect.isclass(item) and issubclass(item, IdolModuleBase):
             return get_module_identifier(item) in self.module_identifiers
         elif isinstance(item, str):
             return item in self.module_identifiers
+        print(
+            'WARNING: IdolModules.__contains__ called with invalid argument {}'.format(
+                repr(item)))
         return False

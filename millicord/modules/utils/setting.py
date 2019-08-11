@@ -43,7 +43,7 @@ class YamlBase(UserDict):
         tmp = self.data
         for part in Path(path).parts:
             print(part, tmp)
-            if part == '/':
+            if part == str(Path('/')):
                 continue
             if part not in tmp:
                 return None

@@ -1,0 +1,13 @@
+SampleModule1:
+  int_param: 123
+  str_param: val1
+  list_param:
+    - val2-2
+    - val2-3
+  keyvalue_param:
+    key1: val1
+    key2: val2
+  date_param: 2002-12-14
+  datetime_param: 2002-12-14 10:00:00
+SampleModule2:
+  param: val
