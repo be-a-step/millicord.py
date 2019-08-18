@@ -13,6 +13,10 @@ class IdolModuleBase(Client):
         # key: default_scripts
     }
 
+    @classmethod
+    def get_identifier(cls) -> str:
+        return cls.__name__
+
     async def _void_coroutine(self, *args, **kwargs):
         return args, kwargs
 

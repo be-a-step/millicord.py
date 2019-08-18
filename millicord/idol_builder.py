@@ -6,7 +6,6 @@ from millicord.utils.setting import IdolConfig, IdolScript
 from millicord.utils.idol_exceptions import IdolConfigError, IdolScriptError, IdolModuleError, IdolBaseError
 from millicord.utils.module_base import IdolModuleType
 from millicord.utils.idol_base import IdolBase
-from millicord.utils.functions import get_module_identifier
 import inspect
 
 
@@ -53,14 +52,14 @@ class IdolBuilder(object):
                 raise IdolModuleError()
             if sum(
                 self.script.get(
-                    get_module_identifier(module),
+                    module.get_identifier(),
                     {}
                 ).get(dsk, None) is None
                     for dsk in module.DEFAULT_SCRIPT.keys()) > 0:
                 raise IdolScriptError()
             if sum(
                 self.config.get(
-                    get_module_identifier(module),
+                    module.get_identifier(),
                     {}
                 ).get(dck, None) is None
                     for dck in module.DEFAULT_CONFIG.keys()) > 0:

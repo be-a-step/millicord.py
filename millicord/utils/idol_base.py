@@ -4,7 +4,6 @@ from .idol_exceptions import IdolSettingError
 from discord import Client
 from .setting import IdolScriptType, IdolScriptItemType, IdolConfigType, IdolConfigItemType
 from .module_base import IdolModuleType
-from .functions import get_module_identifier
 
 
 class IdolBase(Client):
@@ -23,9 +22,13 @@ class IdolBase(Client):
         self.config = config
         self.script = script
 
+    @classmethod
+    def get_identifier(cls) -> str:
+        return cls.__name__
+
     def find_config(self, module: IdolModuleType,
                     path: Union[Path, str]) -> IdolConfigItemType:
-        module_identifier = get_module_identifier(module)
+        module_identifier = module.get_identifier()
         item = self.config.find_by_path(Path(module_identifier, path))
         if item is None:
             raise IdolSettingError(
@@ -36,7 +39,7 @@ class IdolBase(Client):
             self,
             module: IdolModuleType,
             path: Path) -> IdolScriptItemType:
-        module_identifier = get_module_identifier(module)
+        module_identifier = module.get_identifier()
         item = self.script.find_by_path(Path(module_identifier, path))
         if item is None:
             raise IdolSettingError(

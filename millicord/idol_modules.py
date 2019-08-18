@@ -5,14 +5,13 @@ from pathlib import Path
 from millicord.utils.idol_base import IdolBase
 from millicord.utils.setting import IdolConfig, IdolScript
 from . import modules
-from millicord.utils.functions import get_module_identifier
 import inspect
 
 
 class IdolModules(object):
     def __init__(self):
         self.modules: List[IdolModuleType] = [IdolBase]
-        self.module_identifiers = [get_module_identifier(IdolBase)]
+        self.module_identifiers = [IdolBase.get_identifier()]
 
     @classmethod
     def load_from_yaml(cls, path: Union[Path, str]):
@@ -52,14 +51,14 @@ class IdolModules(object):
         conf = IdolConfig()
         for module in self.modules:
             if len(module.DEFAULT_CONFIG):
-                conf[get_module_identifier(module)] = module.DEFAULT_CONFIG
+                conf[module.get_identifier()] = module.DEFAULT_CONFIG
         return conf
 
     def generate_default_script(self) -> IdolScript:
         script = IdolScript()
         for module in self.modules:
             if len(module.DEFAULT_SCRIPT):
-                script[get_module_identifier(module)] = module.DEFAULT_SCRIPT
+                script[module.get_identifier()] = module.DEFAULT_SCRIPT
         return script
 
     def add(self, new_module: IdolModuleType):
@@ -72,14 +71,14 @@ class IdolModules(object):
             self.add(req)
         print('add module:', new_module.__name__)
         self.modules.append(new_module)
-        self.module_identifiers.append(get_module_identifier(new_module))
+        self.module_identifiers.append(new_module.get_identifier())
 
     def to_tuple(self) -> Tuple:
         return tuple(self.modules)
 
     def __contains__(self, item):
         if inspect.isclass(item) and issubclass(item, IdolModuleBase):
-            return get_module_identifier(item) in self.module_identifiers
+            return item.get_identifier() in self.module_identifiers
         elif isinstance(item, str):
             return item in self.module_identifiers
         print(
