@@ -1,6 +1,6 @@
 import unittest
-from millicord.modules.utils.idol_base import IdolBase
-from millicord.modules.utils.setting import IdolConfig, IdolScript
+from millicord.utils.idol_base import IdolBase
+from millicord.utils.setting import IdolConfig, IdolScript
 from pathlib import Path
 import asyncio
 from . import utils

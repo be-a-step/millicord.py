@@ -1,4 +1,4 @@
-from .utils.module_base import IdolModuleBase
+from millicord.utils.module_base import IdolModuleBase
 import asyncio
 import re
 from datetime import datetime

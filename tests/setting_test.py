@@ -1,5 +1,5 @@
 import unittest
-from millicord.modules.utils import setting
+from millicord.utils import setting
 from pathlib import Path
 from datetime import date, datetime
 import os

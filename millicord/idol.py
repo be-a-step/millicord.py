@@ -3,7 +3,7 @@ from typing import Union, List
 from pathlib import Path
 from shutil import rmtree
 from .idol_modules import IdolModules
-from .modules.utils.module_base import IdolModuleBase, IdolModuleType
+from millicord.utils.module_base import IdolModuleBase, IdolModuleType
 from .idol_builder import IdolBuilder
 
 

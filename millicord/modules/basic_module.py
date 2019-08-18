@@ -1,9 +1,9 @@
 from random import choice
-from typing import List, Optional, Union
+from typing import List, Union
 import re
 from discord import Message
 from discord.abc import Messageable
-from .utils.module_base import IdolModuleBase
+from millicord.utils.module_base import IdolModuleBase
 
 
 # todo: ロギングを各モジュールに移譲する

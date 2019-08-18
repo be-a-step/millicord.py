@@ -1,12 +1,11 @@
 import yaml
-from typing import Tuple, Union, Optional, List
-from .modules.utils.module_base import IdolModuleBase, IdolModuleType
+from typing import Tuple, Union, List
+from millicord.utils.module_base import IdolModuleBase, IdolModuleType
 from pathlib import Path
-from .modules.utils.idol_exceptions import IdolModuleError
-from .modules.utils.idol_base import IdolBase
-from .modules.utils.setting import IdolConfig, IdolScript
+from millicord.utils.idol_base import IdolBase
+from millicord.utils.setting import IdolConfig, IdolScript
 from . import modules
-from .modules.utils.functions import get_module_identifier
+from millicord.utils.functions import get_module_identifier
 import inspect
 
 

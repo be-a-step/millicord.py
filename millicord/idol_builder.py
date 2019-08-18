@@ -2,11 +2,11 @@ from typing import Union, Optional
 from pathlib import Path
 import types
 from .idol_modules import IdolModules
-from .modules.utils.setting import IdolConfig, IdolScript
-from .modules.utils.idol_exceptions import IdolConfigError, IdolScriptError, IdolModuleError, IdolBaseError
-from .modules.utils.module_base import IdolModuleType
-from .modules.utils.idol_base import IdolBase
-from .modules.utils.functions import get_module_identifier
+from millicord.utils.setting import IdolConfig, IdolScript
+from millicord.utils.idol_exceptions import IdolConfigError, IdolScriptError, IdolModuleError, IdolBaseError
+from millicord.utils.module_base import IdolModuleType
+from millicord.utils.idol_base import IdolBase
+from millicord.utils.functions import get_module_identifier
 import inspect
 
 

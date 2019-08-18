@@ -1,10 +1,10 @@
 import unittest
 from millicord.idol_modules import IdolModules
-from millicord.modules.utils.module_base import IdolModuleBase, IdolModuleType
-from millicord.modules.utils.idol_base import IdolBase, IdolBaseType
-from millicord.modules.utils.idol_exceptions import IdolBuildError, IdolScriptError, IdolConfigError, IdolBaseError
+from millicord.utils.module_base import IdolModuleBase
+from millicord.utils.idol_base import IdolBase
+from millicord.utils.idol_exceptions import IdolScriptError, IdolConfigError, IdolBaseError
 from millicord.idol_builder import IdolBuilder
-from millicord.modules.utils.setting import IdolConfig, IdolScript
+from millicord.utils.setting import IdolConfig, IdolScript
 from pathlib import Path
 import copy
 from . import utils
