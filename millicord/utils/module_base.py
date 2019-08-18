@@ -2,7 +2,7 @@ from typing import Type
 from discord import Client
 
 
-class IdolModuleBase(Client):
+class IdolModuleBase(object):
     MODULE_REQUIREMENTS = [
         # modules required for this module
     ]

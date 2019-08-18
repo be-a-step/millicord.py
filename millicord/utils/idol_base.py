@@ -3,15 +3,10 @@ from pathlib import Path
 from .idol_exceptions import IdolSettingError
 from discord import Client
 from .setting import IdolScriptType, IdolScriptItemType, IdolConfigType, IdolConfigItemType
-from .module_base import IdolModuleType
+from .module_base import IdolModuleType, IdolModuleBase
 
 
-class IdolBase(Client):
-    # constants for compatibility (DO NOT ADD ANYTHING!!)
-    MODULE_REQUIREMENTS = []
-    DEFAULT_CONFIG = {}
-    DEFAULT_SCRIPT = {}
-
+class IdolBase(Client, IdolModuleBase):
     def __init__(
             self,
             config: IdolConfigType,
@@ -21,10 +16,6 @@ class IdolBase(Client):
         super().__init__(*args, **kwargs)
         self.config = config
         self.script = script
-
-    @classmethod
-    def get_identifier(cls) -> str:
-        return cls.__name__
 
     def find_config(self, module: IdolModuleType,
                     path: Union[Path, str]) -> IdolConfigItemType:
