@@ -4,10 +4,23 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+flake8 = "*"
+autopep8 = "*"
+rope = "*"
 
 [packages]
 discord = "*"
 pyyaml = "*"
+numpy = "*"
+torch = {version = "==0.4.1",sys_platform = "== 'darwin'"}
+urllib3 = "*"
+pillow = "*"
+opencv-python = "*"
 
 [requires]
 python_version = "3.7"
+
+[scripts]
+preptorchwin = "pip3 install https://download.pytorch.org/whl/cu100/torch-1.1.0-cp37-cp37m-win_amd64.whl"
+preptorchlin = "pip3 install https://download.pytorch.org/whl/cu100/torch-1.1.0-cp37-cp37m-linux_x86_64.whl"
+preptorchv = "pip3 install torchvision"
