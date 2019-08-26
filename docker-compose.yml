@@ -1,0 +1,14 @@
+version: "3"
+services:
+  millicode:
+    build: .
+    container_name: millicode
+    volumes:
+      - ./:/millicord.py
+    working_dir: /millicord.py
+    tty: true
+    command: >
+      bash -c "pipenv lock -r > /tmp/requirements.txt &&
+      pip install -r /tmp/requirements.txt &&
+      rm -f requirements.txt &&
+      /bin/bash"
