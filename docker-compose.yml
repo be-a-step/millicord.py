@@ -1,8 +1,8 @@
 version: "3"
 services:
-  millicode:
+  millicord:
     build: .
-    container_name: millicode
+    container_name: millicord
     volumes:
       - ./:/millicord.py
     working_dir: /millicord.py
