@@ -26,8 +26,7 @@ DATA_TRANSFORM_DENSE = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))
 ])
-MODEL_PATH_RES = './resources/models/idol_recognition_res.model'
-MODEL_PATH_DENSE = './resources/models/idol_recognition_dense.model'
+MODEL_PATH = './resources/models/idol_recognition_{}.model'
 CASCADE_PATH = './resources/cv2_cascade/lbpcascade_animeface.xml'
 CLASSES_PATH = './resources/models/idol_recognition_classes.txt'
 TRIMING_MARGIN = (20, 20, 20, 0)
@@ -64,7 +63,6 @@ class IdolRecognition(object):
             model = models.resnet34(pretrained=True)
             num_features = model.fc.in_features
             model.fc = nn.Linear(num_features, len(self.classes))
-            model_path = MODEL_PATH_RES
         if name == "densenet":
             def squeeze_weights(m):
                 m.weight.data = m.weight.data.sum(dim=1)[:, None]
@@ -72,7 +70,7 @@ class IdolRecognition(object):
             model = models.densenet121(pretrained=True)
             num_features = model.classifier.in_features
             model.classifier = nn.Linear(num_features, len(self.classes))
-            model_path = MODEL_PATH_DENSE
+        model_path = MODEL_PATH.format(name)
         param = torch.load(str(Path(model_path)))
         model.load_state_dict(param)
         return model
