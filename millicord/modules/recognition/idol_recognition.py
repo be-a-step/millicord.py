@@ -74,7 +74,7 @@ class IdolRecognition(object):
             param = torch.load(str(Path(model_path)))
         else:
             device = torch.device('cpu')
-            torch.load(str(Path(model_path)), map_location=device)
+            param = torch.load(str(Path(model_path)), map_location=device)
         model.load_state_dict(param)
         model = model.to(device)
         return model
