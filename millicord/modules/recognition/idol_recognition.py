@@ -47,8 +47,6 @@ class IdolRecognition(object):
 
     def prepare_model(self, name):
         model = self.get_model(name)
-        if torch.cuda.is_available():
-            model = model.cuda()
         model.eval()
         return model
 
@@ -71,8 +69,14 @@ class IdolRecognition(object):
             num_features = model.classifier.in_features
             model.classifier = nn.Linear(num_features, len(self.classes))
         model_path = MODEL_PATH.format(name)
-        param = torch.load(str(Path(model_path)))
+        if torch.cuda.is_available():
+            device = torch.device("cuda")
+            param = torch.load(str(Path(model_path)))
+        else:
+            device = torch.device('cpu')
+            torch.load(str(Path(model_path), map_location=device))
         model.load_state_dict(param)
+        model = model.to(device)
         return model
 
     def prepare_cascade():
