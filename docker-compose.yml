@@ -10,7 +10,7 @@ services:
     command: >
       bash -c "pipenv lock -r > /tmp/requirements.txt &&
       pip install -r /tmp/requirements.txt &&
-      pip install torchvision &&
       pip install https://download.pytorch.org/whl/cu100/torch-1.1.0-cp37-cp37m-linux_x86_64.whl &&
+      pip install torchvision &&
       rm -f requirements.txt &&
       /bin/bash"
