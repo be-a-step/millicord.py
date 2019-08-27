@@ -17,4 +17,4 @@ before_install:
 
 script:
   - while true ; do if [ `docker exec millicord pip freeze | grep torchvision ` ] ; then sleep 2; break ; fi; done
-  - docker exec millicord bash -- -c "python ./t_hepler.py -t ${BOT_TOKEN} && python ./setup.py test"
+  - docker exec millicord bash -c "python ./t_helper.py -t ${BOT_TOKEN} && python ./setup.py test"
