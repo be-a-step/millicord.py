@@ -16,5 +16,5 @@ before_install:
   - docker-compose up -d
 
 script:
-  - while true ; do if [ `docker exec millicord pip freeze | grep torchvisiona ` ] ; then sleep 2; break ; fi; done
+  - while true ; do if [ `docker exec millicord pip freeze | grep torchvision ` ] ; then sleep 2; break ; fi; done
   - docker exec millicord bash -- -c 'python ./t_hepler.py -t ${BOT_TOKEN} && python ./setup.py test'
