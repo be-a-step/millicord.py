@@ -1,12 +1,11 @@
 from random import choice
-from typing import List, Union
+from typing import List
 import re
 from discord import Message
-from discord.abc import Messageable
 from millicord.utils.module_base import IdolModuleBase
 
 
-# todo: ロギングを各モジュールに移譲する
+# todo: ロギングを各モジュールに移譲して消す
 class LoggingModule(IdolModuleBase):
     # ログイン時の処理
     async def on_ready(self):
@@ -21,41 +20,66 @@ class LoggingModule(IdolModuleBase):
         # ログの取得
         print("In:", message.channel.name)
         print("From: {0}({1})".format(message.author, message.author.id))
-        message_receivers = re.findall(r"\<@\!?(.+?)\>", message.content)
-        print("To:", *message_receivers)
+        to_ids = re.findall(r"\<@\!?(.+?)\>", message.content)
+        print("To:", *to_ids)
         print(message.content)
         await self.chain_super_coroutine('on_message', LoggingModule)(message)
 
-    # async def on_mentioned(self, message: Message):
-    # await self.chain_super_coroutine('on_mentioned', LoggingModule)(message)
-
 
 class MessageSenderBaseModule(IdolModuleBase):
-    def mention_formatter(
-            self, message_receivers: List[Union[int, str]], message_text: str) -> str:
-        formatted_text = " ".join(["<@{0}>".format(uid)
-                                   for uid in message_receivers] + [message_text])
-        args, kwargs = self.chain_super_function(
-            'mention_formatter',
-            MessageSenderBaseModule)(message_receivers, formatted_text)
-        return kwargs.get('formatted_text', args[1] if len(args) > 1 else None)
+    """メッセージを送信するモジュールの前提モジュール"""
 
-    async def send_message(self, channel: Messageable, message_text: str, message_receivers: Union[list, str, int, None] = None):
-        if message_receivers is None:
+    def mention_formatter(self, to_ids, message_text):
+        """
+        メンションのフォーマッタ
+
+        Parameters
+        ----------
+        to_ids : List[Union[int, str]]
+            mention先userのidリスト
+        message_text : str
+            メッセージ
+
+        Returns
+        -------
+        formatted_text : str
+
+        """
+        uid_text = ["<@{0}>".format(uid) for uid in to_ids]
+        formatted_text = " ".join(uid_text + [message_text])
+        sf = self.chain_super_function(
+            'mention_formatter', MessageSenderBaseModule)
+        return sf(to_ids, formatted_text) or formatted_text
+
+    async def send_message(self, channel, message_text, to_ids=None):
+        """
+        メッセージ送信コルーチン
+
+        Parameters
+        ----------
+        channel : discord.abc.Messageable
+            対象のチャンネル
+        message_text : str
+            messageの本文
+        to_ids : Optional[list, str, int]
+            mention先userのidリスト
+        """
+        if to_ids is None:
             send_text = message_text
-        elif isinstance(message_receivers, (int, str)):
+        elif isinstance(to_ids, (int, str)):
             send_text = self.mention_formatter(
-                [message_receivers], message_text)
-        elif isinstance(message_receivers, list) and len(message_receivers) > 0:
-            send_text = self.mention_formatter(message_receivers, message_text)
+                [to_ids], message_text)
+        elif isinstance(to_ids, list) and len(to_ids) > 0:
+            send_text = self.mention_formatter(to_ids, message_text)
         else:
-            raise ValueError(
-                'Invalid message receivers passed: {}'.format(message_receivers))
+            raise ValueError(f'Invalid message receivers: {to_ids}')
         await channel.send(send_text)
-        await self.chain_super_coroutine('send_message', MessageSenderBaseModule)(channel, message_text, message_receivers)
+        c = self.chain_super_coroutine('send_message', MessageSenderBaseModule)
+        await c(channel, message_text, to_ids)
 
 
 class PCallModule(IdolModuleBase):
+    """メンション先のIDに接尾辞を付けるコルーチン"""
     MODULE_REQUIREMENTS = [
         MessageSenderBaseModule
     ]
@@ -63,31 +87,51 @@ class PCallModule(IdolModuleBase):
         'p-call': 'Pさん',
     }
 
-    def mention_formatter(
-            self,
-            message_receivers: list,
-            message_text: str) -> str:
-        formatted_text = re.sub(
-            r"(<@\d+>)",
-            r"\1" + self.find_config(PCallModule, "p-call"),
-            message_text
-        )
-        return self.chain_super_function(
-            'mention_formatter',
-            PCallModule)(message_receivers, formatted_text)
+    def mention_formatter(self, to_ids, message_text):
+        """
+        メンション先のIDに接尾辞を付けるコルーチン
+        e.g. "@hoge" -> "@hoge Pさん"
+
+        Parameters
+        ----------
+        to_ids : List[Union[int, str]]
+            mention先userのidリスト
+        message_text : str
+            メッセージ
+
+        Returns
+        -------
+        formatted_text : str
+
+        """
+        sfx = self.find_config(PCallModule, "p-call")
+        formatted_text = re.sub(r"(<@\d+>)", r"\1" + sfx, message_text)
+        sf = self.chain_super_function(
+            'mention_formatter', MessageSenderBaseModule)
+        return sf(to_ids, formatted_text) or formatted_text
 
 
 # メッセージ受信時の処理
 class OnMentionedModule(IdolModuleBase):
-    async def on_message(self, message: Message):
-        # botが呼ばれていたらon_mentionedへ
+    """on_mentionedの前提モジュール"""
+    async def on_message(self, message):
+        """
+        on_messageの呼び出しのうちmentionをon_mentionedへと分岐させるコルーチン。
+
+        Parameters
+        ----------
+        message : Message
+        """
         if str(self.user.id) in re.findall(r"\<@\!?(.+?)\>", message.content):
-            await self.chain_super_coroutine('on_mentioned', OnMentionedModule)(message)
+            sc = self.chain_super_coroutine('on_mentioned', OnMentionedModule)
+            await sc(message)
         else:
-            await self.chain_super_coroutine('on_message', OnMentionedModule)(message)
+            sc = self.chain_super_coroutine('on_message', OnMentionedModule)
+            await sc(message)
 
 
 class EchoModule(IdolModuleBase):
+    """メッセージが送られるたびに固定メッセージを返すモジュール"""
     MODULE_REQUIREMENTS = {
         # MessageSenderBaseModule,
         OnMentionedModule
@@ -97,14 +141,30 @@ class EchoModule(IdolModuleBase):
     }
 
     async def on_message(self, message: Message):
+        """
+        messageにmessageを返すコルーチン
+
+        Parameters
+        ----------
+        message : Message
+        """
         if self.user.id == message.author.id:
             return
-        await self.send_message(message.channel, self.find_script(EchoModule, 'message'))
+        script = self.find_script(EchoModule, 'message')
+        await self.send_message(message.channel, script)
 
     async def on_mentioned(self, message: Message):
+        """
+        mentionにmentionを返すコルーチン
+
+        Parameters
+        ----------
+        message : Message
+        """
         if self.user.id == message.author.id:
             return
-        await self.send_message(message.channel, self.find_script(EchoModule, 'message'), message.author.id)
+        script = self.find_script(EchoModule, 'message')
+        await self.send_message(message.channel, script, message.author.id)
 
 
 STATE_FREE = 0
@@ -112,6 +172,7 @@ STATE_BUSY = 1
 
 
 class IdolStateModule(IdolModuleBase):
+    """アイドルにbusy状態を導入するモジュール"""
     MODULE_REQUIREMENTS = {
         MessageSenderBaseModule,
         OnMentionedModule
@@ -126,28 +187,48 @@ class IdolStateModule(IdolModuleBase):
         self.state = STATE_FREE
 
     def is_busy(self):
+        """stateがbusyなのかを判定するメソッド"""
         return self.state == STATE_BUSY
 
     def to_busy(self):
+        """stateをbusyに切り替えるメソッド"""
         self.state = STATE_BUSY
 
     def to_free(self):
+        """stateをfreeに切り替えるメソッド"""
         self.state = STATE_FREE
 
-    async def on_message(self, message: Message):
-        if self.is_busy():
-            pass
-        else:
-            await self.chain_super_coroutine('on_message', IdolStateModule)(message)
+    async def on_message(self, message):
+        """
+        busyならメッセージを無視するようにするコルーチン
+
+        Parameters
+        ----------
+        message : Message
+        """
+        if not self.is_busy():
+            return
+        sc = self.chain_super_coroutine('on_mentioned', IdolStateModule)
+        await sc(message)
 
     async def on_mentioned(self, message: Message):
+        """
+        mentionを受けたとき、busyなら謝って断るモジュール
+
+        Parameters
+        ----------
+        message : Message
+        """
         if self.is_busy():
-            await self.send_message(message.channel, self.find_script(IdolStateModule, 'busy_apologize'), message.author.id)
-        else:
-            await self.chain_super_coroutine('on_mentioned', IdolStateModule)(message)
+            script = self.find_script(IdolStateModule, 'busy_apologize')
+            await self.send_message(message.channel, script, message.author.id)
+            return
+        sc = self.chain_super_coroutine('on_mentioned', IdolStateModule)
+        await sc(message)
 
 
 class RandomResposeModule(IdolModuleBase):
+    """ランダムなメッセージを返すモジュール"""
     MODULE_REQUIREMENTS = {
         MessageSenderBaseModule,
         OnMentionedModule
@@ -158,10 +239,14 @@ class RandomResposeModule(IdolModuleBase):
         'message_3': "Hello"
     }
 
-    async def on_mentioned(self, message: Message):
-        sampled_message = choice(
-            list(
-                self.find_script(
-                    RandomResposeModule,
-                    '').values()))
-        await self.send_message(message.channel, sampled_message, message.author.id)
+    async def on_mentioned(self, message):
+        """
+        mentionを受けたとき、ランダムに返答するコルーチン
+
+        Parameters
+        ----------
+        message : Message
+        """
+        scripts = list(self.find_script(RandomResposeModule, '').values())
+        script = choice(scripts)
+        await self.send_message(message.channel, script, message.author.id)

@@ -17,16 +17,10 @@ class SampleModule1(IdolModuleBase):
     }
 
     async def on_ready(self):
-        self.cor_test_str = ''
-        self.cor_test_ret_str = ''
-        self.func_test_str = ''
-        self.func_test_ret_str = ''
-        args, kwargs = await super(SampleModule1, self).on_ready_sub(self.cor_test_ret_str)
-        self.cor_test_ret_str = args[0]
-        args, kwargs = super(
-            SampleModule1, self).test_func_sub(
-            self.func_test_ret_str)
-        self.func_test_ret_str = args[0]
+        self.cor_str = ''
+        self.func_str = ''
+        self.cor_ret_str = await super(SampleModule1, self).on_ready_sub('')
+        self.func_ret_str = super(SampleModule1, self).test_func_sub('')
         await self.logout()
 
     async def on_error(self, event_method, *args, **kwargs):
@@ -42,15 +36,16 @@ class SampleModule2(IdolModuleBase):
     }
 
     async def on_ready_sub(self, s: str):
-        self.cor_test_str += 'hoge'
-        return await self.chain_super_coroutine('on_ready_sub', SampleModule2)(s + 'ho')
+        self.cor_str += 'hoge'
+        sc = self.chain_super_coroutine('on_ready_sub', SampleModule2)
+        s += "ho"
+        return await sc(s) or s
 
     def test_func_sub(self, s: str):
-        self.func_test_str += 'foo'
-        return self.chain_super_function(
-            'test_func_sub',
-            SampleModule2)(
-            s + 'fo')
+        self.func_str += 'foo'
+        sf = self.chain_super_function('test_func_sub', SampleModule2)
+        s += "fo"
+        return sf(s) or s
 
 
 class SampleModule3(IdolModuleBase):
@@ -66,15 +61,16 @@ class SampleModule3(IdolModuleBase):
     }
 
     async def on_ready_sub(self, s: str):
-        self.cor_test_str += 'fuga'
-        return await self.chain_super_coroutine('on_ready_sub', SampleModule3)(s + 'ge')
+        self.cor_str += 'fuga'
+        sc = self.chain_super_coroutine('on_ready_sub', SampleModule3)
+        s += "ge"
+        return await sc(s) or s
 
     def test_func_sub(self, s: str):
-        self.func_test_str += 'bar'
-        return self.chain_super_function(
-            'test_func_sub',
-            SampleModule3)(
-            s + 'o')
+        self.func_str += 'bar'
+        sf = self.chain_super_function('test_func_sub', SampleModule3)
+        s += 'o'
+        return sf(s) or s
 
 
 EXPECTED_MODULES = [
@@ -113,12 +109,7 @@ class IdolBuilderTest(utils.AsyncTestMixin, unittest.TestCase):
         script = modules.generate_default_script()
         config = modules.generate_default_config()
 
-        builder = IdolBuilder(
-            modules=modules,
-            script=script,
-            config=config
-        )
-        self.assertTrue(builder.build_check())
+        IdolBuilder(modules=modules, script=script, config=config)
 
         builder = IdolBuilder(
             modules=modules,
@@ -213,10 +204,10 @@ class IdolBuilderTest(utils.AsyncTestMixin, unittest.TestCase):
         )
         idol = builder.build(loop=self.get_event_loop())
         idol.run(builder.token)
-        self.assertEqual(idol.cor_test_str, 'hogefuga')
-        self.assertEqual(idol.cor_test_ret_str, 'hoge')
-        self.assertEqual(idol.func_test_str, 'foobar')
-        self.assertEqual(idol.func_test_ret_str, 'foo')
+        self.assertEqual(idol.cor_str, 'hogefuga')
+        self.assertEqual(idol.cor_ret_str, 'hoge')
+        self.assertEqual(idol.func_str, 'foobar')
+        self.assertEqual(idol.func_ret_str, 'foo')
 
     def test_build_and_run(self):
         modules = IdolModules()
