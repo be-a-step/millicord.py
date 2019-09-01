@@ -3,7 +3,11 @@ from pathlib import Path
 import types
 from .idol_modules import IdolModules
 from millicord.utils.setting import IdolConfig, IdolScript
-from millicord.utils.idol_exceptions import IdolConfigError, IdolScriptError, IdolModuleError, IdolBaseError
+from millicord.utils.idol_exceptions import (
+    IdolConfigError,
+    IdolScriptError,
+    IdolModuleError,
+    IdolBaseError)
 from millicord.utils.module_base import IdolModuleType
 from millicord.utils.idol_base import IdolBase
 import inspect
@@ -81,20 +85,21 @@ class IdolBuilder(object):
             raise IdolBaseError()
         for module in self.modules.modules:
             # 必要な前提モジュール/Script/Configが揃っているか確認
-            if sum(rm not in self.modules for rm in module.MODULE_REQUIREMENTS) > 0:
+            if sum(rm not in self.modules for rm in
+                   module.MODULE_REQUIREMENTS) > 0:
                 raise IdolModuleError()
             if sum(
-                self.script.get(
-                    module.get_identifier(),
-                    {}
-                ).get(dsk, None) is None
+                    self.script.get(
+                        module.get_identifier(),
+                        {}
+                    ).get(dsk, None) is None
                     for dsk in module.DEFAULT_SCRIPT.keys()) > 0:
                 raise IdolScriptError()
             if sum(
-                self.config.get(
-                    module.get_identifier(),
-                    {}
-                ).get(dck, None) is None
+                    self.config.get(
+                        module.get_identifier(),
+                        {}
+                    ).get(dck, None) is None
                     for dck in module.DEFAULT_CONFIG.keys()) > 0:
                 raise IdolConfigError()
 

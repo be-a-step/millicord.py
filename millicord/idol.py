@@ -2,9 +2,8 @@ import os
 from typing import Union, List
 from pathlib import Path
 from shutil import rmtree
-from .idol_modules import IdolModules
-from millicord.utils.module_base import IdolModuleBase, IdolModuleType
-from .idol_builder import IdolBuilder
+from millicord.idol_modules import IdolModules
+from millicord.idol_builder import IdolBuilder
 
 
 #  idol_name/

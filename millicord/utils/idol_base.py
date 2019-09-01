@@ -51,8 +51,7 @@ class IdolBase(Client, IdolModuleBase):
         module_identifier = module.get_identifier()
         item = self.config.find_by_path(Path(module_identifier, path))
         if item is None:
-            raise IdolSettingError(
-                'config {} is required but not written in the yaml file.'.format(path))
+            raise IdolSettingError('CZonfig \"{}\" is required.'.format(path))
         return item
 
     def find_script(self, module: IdolModuleType, path: Path) -> str:

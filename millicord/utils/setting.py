@@ -1,5 +1,4 @@
 import yaml
-from typing import Union
 from pathlib import Path
 from collections import UserDict
 

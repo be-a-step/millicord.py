@@ -1,7 +1,7 @@
 import yaml
 import sys
-from typing import Tuple, Union, List
-from millicord.utils.module_base import IdolModuleBase, IdolModuleType
+from typing import Tuple, List
+from millicord.utils.module_base import IdolModuleBase
 from pathlib import Path
 from millicord.utils.idol_base import IdolBase
 from millicord.utils.setting import IdolConfig, IdolScript
@@ -58,12 +58,6 @@ class IdolModules(Sequence):
             if module is None:
                 raise ValueError('Unknown module: {}'.format(module_name))
             idol_modules.add(module)
-        # todo: implement external modules loading
-        # for module_name in modules.get('external', {}).keys():
-        #     module = getattr(modules, module_name, None)
-        #     if module is None:
-        #         raise ValueError('No module named {} exists'.format(module_name))
-        #     idol_modules.add(module)
         return idol_modules
 
     def write_to_yaml(self, path, default_flow_style=False, overwrite=False):
