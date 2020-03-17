@@ -1,10 +1,9 @@
 import unittest
 from millicord.idol_modules import IdolModules
-from millicord.modules.utils.module_base import IdolModuleBase, IdolModuleType
-from millicord.modules.utils.idol_base import IdolBase, IdolBaseType
+from millicord.utils.module_base import IdolModuleBase, IdolModuleType
+from millicord.utils.idol_base import IdolBase, IdolBaseType
 from pathlib import Path
 from typing import Union
-import yaml
 import os
 import shutil
 

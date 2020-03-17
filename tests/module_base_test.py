@@ -1,44 +1,44 @@
 import unittest
-from millicord.modules.utils.idol_base import IdolBase
-from millicord.modules.utils.module_base import IdolModuleBase
+from millicord.utils.idol_base import IdolBase
+from millicord.utils.module_base import IdolModuleBase
 from pathlib import Path
 import asyncio
 
 
 class SampleModule1(IdolModuleBase):
     async def on_ready_sub(self, s: str):
-        self.cor_test_str += 'hoge'
-        return await self.chain_super_coroutine('on_ready_sub', SampleModule1)(s + 'ho')
+        self.cor_str += 'hoge'
+        sc = self.chain_super_coroutine('on_ready_sub', SampleModule1)
+        s += "ho"
+        return await sc(s) or s
 
     def test_func_sub(self, s: str):
-        self.func_test_str += 'foo'
-        return self.chain_super_function(
-            'test_func_sub',
-            SampleModule1)(
-            s + 'fo')
+        self.func_str += 'foo'
+        sf = self.chain_super_function('test_func_sub', SampleModule1)
+        s += "fo"
+        return sf(s) or s
 
 
 class SampleModule2(IdolModuleBase):
     async def on_ready_sub(self, s: str):
-        self.cor_test_str += 'fuga'
-        return await self.chain_super_coroutine('on_ready_sub', SampleModule2)(s + 'ge')
+        self.cor_str += 'fuga'
+        sc = self.chain_super_coroutine('on_ready_sub', SampleModule2)
+        s += "ge"
+        return await sc(s) or s
 
     def test_func_sub(self, s: str):
-        self.func_test_str += 'bar'
-        return self.chain_super_function(
-            'test_func_sub',
-            SampleModule2)(
-            s + 'o')
+        self.func_str += 'bar'
+        sf = self.chain_super_function('test_func_sub', SampleModule2)
+        s += 'o'
+        return sf(s) or s
 
 
 class TestIdol(IdolBase, SampleModule1, SampleModule2):
     async def on_ready(self):
-        args, kwargs = await super(TestIdol, self).on_ready_sub(self.cor_test_ret_str)
-        self.cor_test_ret_str = args[0]
-        args, kwargs = super(
-            TestIdol, self).test_func_sub(
-            self.func_test_ret_str)
-        self.func_test_ret_str = args[0]
+        self.cor_str = ''
+        self.func_str = ''
+        self.cor_ret_str = await super(TestIdol, self).on_ready_sub('')
+        self.func_ret_str = super(TestIdol, self).test_func_sub('')
         await self.logout()
 
     async def on_error(self, event_method, *args, **kwargs):
@@ -58,15 +58,11 @@ class TestModuleBase(unittest.TestCase):
     def test_chain(self):
         with (self.idol_path / '.token').open() as f:
             token = f.read().strip()
-        self.idol.cor_test_str = ''
-        self.idol.cor_test_ret_str = ''
-        self.idol.func_test_str = ''
-        self.idol.func_test_ret_str = ''
         self.idol.run(token)
-        self.assertEqual(self.idol.cor_test_str, 'hogefuga')
-        self.assertEqual(self.idol.cor_test_ret_str, 'hoge')
-        self.assertEqual(self.idol.func_test_str, 'foobar')
-        self.assertEqual(self.idol.func_test_ret_str, 'foo')
+        self.assertEqual(self.idol.cor_str, 'hogefuga')
+        self.assertEqual(self.idol.cor_ret_str, 'hoge')
+        self.assertEqual(self.idol.func_str, 'foobar')
+        self.assertEqual(self.idol.func_ret_str, 'foo')
 
 
 if __name__ == '__main__':

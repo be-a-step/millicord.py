@@ -2,9 +2,8 @@ import os
 from typing import Union, List
 from pathlib import Path
 from shutil import rmtree
-from .idol_modules import IdolModules
-from .modules.utils.module_base import IdolModuleBase, IdolModuleType
-from .idol_builder import IdolBuilder
+from millicord.idol_modules import IdolModules
+from millicord.idol_builder import IdolBuilder
 
 
 #  idol_name/
@@ -12,36 +11,39 @@ from .idol_builder import IdolBuilder
 #   ├ config.yaml
 #   ├ modules.yaml
 #   └ script.yaml
-def generate_idol_folder(path: Union[Path, str],
-                         token: str,
-                         module_list: List[IdolModuleType],
-                         overwrite: bool = False):
+def generate_idol_folder(path, token, module_list, overwrite=False):
+    """
+    Idolフォルダを生成
+
+    Parameters
+    ----------
+    path : Union[Path, str]
+        生成するフォルダの名前
+    token : str
+        discord bot のトークン
+    module_list : List[IdolModuleType]
+        モジュールのリスト
+    overwrite : bool
+        上書きフラグ
+
+    Returns
+    -------
+    builder : IdolBuilder
+    """
+
     path = Path(path)
-    if (not overwrite) and path.exists():
-        raise FileExistsError(path)
-
-    modules = IdolModules()
-    for module in module_list:
-        if not issubclass(module, IdolModuleBase):
-            raise ValueError('{} is not IdolModule'.format(repr(module)))
-        modules.add(module)
-
+    modules = IdolModules(module_list)
     if overwrite:
         rmtree(path, ignore_errors=True)
+    elif path.exists():
+        raise FileExistsError(path)
 
     os.makedirs(path)
-    with (path / '.token').open('w') as f:
-        f.write(token)
+    (path / '.token').write_text(token)
     modules.write_to_yaml(path / 'modules.yaml', overwrite=overwrite)
     script = modules.generate_default_script()
     script.write_to_yaml(path / 'script.yaml', overwrite=overwrite)
     config = modules.generate_default_config()
     config.write_to_yaml(path / 'config.yaml', overwrite=overwrite)
 
-    return IdolBuilder(
-        token=token,
-        name=path.stem,
-        modules=modules,
-        config=config,
-        script=script
-    ).build()
+    return IdolBuilder(token, path.stem, modules, script, config).build()

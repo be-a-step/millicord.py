@@ -1,16 +1,17 @@
 import unittest
-from millicord.modules.utils.idol_base import IdolBase
-from millicord.modules.utils.setting import IdolConfig, IdolScript
+from millicord.utils.idol_base import IdolBase
+from millicord.utils.module_base import IdolModuleBase
+from millicord.utils.setting import IdolConfig, IdolScript
 from pathlib import Path
 import asyncio
 from . import utils
 
 
-class SampleModule1(object):
+class SampleModule1(IdolModuleBase):
     pass
 
 
-class SampleModule2(object):
+class SampleModule2(IdolModuleBase):
     pass
 
 
