@@ -107,7 +107,7 @@ class PCallModule(IdolModuleBase):
         sfx = self.find_config(PCallModule, "p-call")
         formatted_text = re.sub(r"(<@\d+>)", r"\1" + sfx, message_text)
         sf = self.chain_super_function(
-            'mention_formatter', MessageSenderBaseModule)
+            'mention_formatter', PCallModule)
         return sf(to_ids, formatted_text) or formatted_text
 
 
@@ -181,9 +181,8 @@ class IdolStateModule(IdolModuleBase):
         'busy_apologize': "I'm busy and cannot respond."
     }
 
-    def __init__(self, *args, **kwargs):
-        if hasattr(super(), '__init__'):
-            super().__init__(*args, **kwargs)
+    def __init__(self):
+        self.chain_super_function("__init__", IdolStateModule)()
         self.state = STATE_FREE
 
     def is_busy(self):
