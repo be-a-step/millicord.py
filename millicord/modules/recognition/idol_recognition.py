@@ -9,6 +9,7 @@ import urllib
 from PIL import Image
 from logging import getLogger, StreamHandler, INFO
 
+
 logger = getLogger(__name__)
 handler = StreamHandler()
 handler.setLevel(INFO)
@@ -26,30 +27,33 @@ DATA_TRANSFORM_DENSE = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))
 ])
-MODEL_PATH = './resources/models/idol_recognition_{}.model'
-CASCADE_PATH = './resources/cv2_cascade/lbpcascade_animeface.xml'
-CLASSES_PATH = './resources/models/idol_recognition_classes.txt'
 TRIMING_MARGIN = (20, 20, 20, 0)
-MODEL_NAME = "densenet"
 
 
 class IdolRecognition(object):
-
-    def __init__(self):
+    def __init__(
+            self,
+            model_path,
+            cascade_path,
+            classes_path,
+            model_name='densenet'):
+        self.model_path = model_path
+        self.cascade_path = cascade_path
         logger.info("load classes")
-        self.classes = np.loadtxt(CLASSES_PATH, dtype="unicode")
+        self.classes = np.loadtxt(classes_path, dtype="unicode")
         logger.debug(self.classes)
         logger.info("prepare model")
-        self.model = self.prepare_model(MODEL_NAME)
-        self.transformation = IdolRecognition.get_transform(MODEL_NAME)
+        self.model = self.prepare_model(model_name)
+        self.transformation = IdolRecognition.get_transform(model_name)
         logger.info("prepare cascade")
-        self.face_cascade = IdolRecognition.prepare_cascade()
+        self.face_cascade = self.prepare_cascade()
 
     def prepare_model(self, name):
         model = self.get_model(name)
         model.eval()
         return model
 
+    @staticmethod
     def get_transform(name):
         if name == "resnet":
             return DATA_TRANSFORM_RES
@@ -62,13 +66,12 @@ class IdolRecognition(object):
             num_features = model.fc.in_features
             model.fc = nn.Linear(num_features, len(self.classes))
         if name == "densenet":
-            def squeeze_weights(m):
-                m.weight.data = m.weight.data.sum(dim=1)[:, None]
-                m.in_channels = 1
             model = models.densenet121(pretrained=True)
             num_features = model.classifier.in_features
             model.classifier = nn.Linear(num_features, len(self.classes))
-        model_path = MODEL_PATH.format(name)
+        else:
+            raise ValueError(name)
+        model_path = self.model_path.format(name)
         if torch.cuda.is_available():
             device = torch.device("cuda")
             param = torch.load(str(Path(model_path)))
@@ -79,8 +82,8 @@ class IdolRecognition(object):
         model = model.to(device)
         return model
 
-    def prepare_cascade():
-        return cv2.CascadeClassifier(str(Path(CASCADE_PATH)))
+    def prepare_cascade(self):
+        return cv2.CascadeClassifier(str(Path(self.cascade_path)))
 
     def recognize_idol(self, url, name):
         logger.info("get image")
@@ -95,6 +98,7 @@ class IdolRecognition(object):
                 return True
         return False
 
+    @staticmethod
     def get_image(url):
         resp = urllib.request.urlopen(url)
         image_array = np.asarray(bytearray(resp.read()), dtype="uint8")
@@ -119,6 +123,7 @@ class IdolRecognition(object):
             # logger.debug(str(x))
         return face_images
 
+    @staticmethod
     def get_resize_position(x, y, w, h, margin, max_width, max_hight):
         margin_left = int(w * margin[0] / 100)
         margin_top = int(h * margin[1] / 100)
