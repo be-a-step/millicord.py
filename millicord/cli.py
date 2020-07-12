@@ -48,10 +48,10 @@ def generate_template(debug, force, folder, token, modules):
             click.echo(traceback.format_exc())
         click.echo('Terminated.')
 
-@cmd.command()
-@click.option("-a", "--all", help="Show all modules.", is_flag=True)
-@click.option("-d", "--detail", help="Show detailed description.", is_flag=True)
-def list_modules(all, detail):
+# @cmd.command()
+# @click.option("-a", "--all", help="Show all modules.", is_flag=True)
+# @click.option("-d", "--detail", help="Show detailed description.", is_flag=True)
+# def list_modules(all, detail):
 
 
 def main():
