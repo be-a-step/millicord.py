@@ -27,9 +27,9 @@ class IdolBase(Client, IdolModuleBase):
             *args,
             **kwargs):
         super().__init__(*args, **kwargs)
-        super(Client, self).__init__()
         self.config = config
         self.script = script
+        super(Client, self).__init__()
 
     def find_config(
             self,

@@ -207,7 +207,7 @@ class IdolStateModule(IdolModuleBase):
         """
         if not self.is_busy():
             return
-        sc = self.chain_super_coroutine('on_mentioned', IdolStateModule)
+        sc = self.chain_super_coroutine('on_message', IdolStateModule)
         await sc(message)
 
     async def on_mentioned(self, message: Message):

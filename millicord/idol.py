@@ -32,7 +32,7 @@ def generate_idol_folder(path, token, module_list, overwrite=False):
     """
 
     path = Path(path)
-    modules = IdolModules(module_list)
+    modules = IdolModules(*module_list)
     if overwrite:
         rmtree(path, ignore_errors=True)
     elif path.exists():
