@@ -5,7 +5,7 @@ from io import BytesIO
 
 from millicord.utils.module_base import IdolModuleBase
 from millicord import modules as M
-from millicord.utils.idol_exceptions import IdolConfigError
+from millicord.utils.idol_exceptions import IdolConfigError, IdolScriptError
 from .idol_recognition import IdolRecognition
 
 import numpy as np
@@ -71,14 +71,32 @@ class FaceRecognitionModule(IdolModuleBase):
         """
         if self.is_busy():
             return
-        predicted = None
-        attachments = list(self.extract_png_attachments(message))
-        if len(attachments) > 0:
-            predicted = self.translate_label(self.predict(attachments[0]))
-        if predicted:
-            script = self.find_script(FaceRecognitionModule, 'on_mentioned')
+        attachments = await self.extract_png_attachments(message)
+        if len(attachments) == 0:
+            sc = self.chain_super_coroutine('on_message',
+                                            FaceRecognitionModule)
+            await sc(message)
+            return
+        predicted_label = await self.predict(attachments[0])
+        predicted = self.translate_label(predicted_label)
+        script = self.find_script(
+            FaceRecognitionModule,
+            'message_response'
+        )
+        if isinstance(script, dict):
+            scripts = script
+            if predicted_label:
+                script = scripts.get(
+                    predicted_label,
+                    scripts.get("__default__", None)
+                )
+            else:
+                script = scripts.get("__none__", None)
+        if script and not isinstance(script, str):
+            raise IdolScriptError("Unacceptable script.")
+        if script:
             script = script.format(label=predicted)
-            await self.send_message(message.channel, script, message.author.id)
+            await self.send_message(message.channel, script)
             return
         sc = self.chain_super_coroutine('on_message', FaceRecognitionModule)
         await sc(message)
@@ -91,13 +109,30 @@ class FaceRecognitionModule(IdolModuleBase):
         ----------
         message : Message
         """
-        predicted = None
         attachments = await self.extract_png_attachments(message)
-        if len(attachments) > 0:
-            predicted = self.translate_label(await self.predict(attachments[0]))
-        if predicted:
-            script = self.find_script(
-                FaceRecognitionModule, 'mention_response')
+        if len(attachments) == 0:
+            sc = self.chain_super_coroutine('on_mentioned',
+                                            FaceRecognitionModule)
+            await sc(message)
+            return
+        predicted_label = await self.predict(attachments[0])
+        predicted = self.translate_label(predicted_label)
+        script = self.find_script(
+            FaceRecognitionModule,
+            'mention_response'
+        )
+        if isinstance(script, dict):
+            scripts = script
+            if predicted_label:
+                script = scripts.get(
+                    predicted_label,
+                    scripts.get("__default__", None)
+                )
+            else:
+                script = scripts.get("__none__", None)
+        if script and not isinstance(script, str):
+            raise IdolScriptError("Unacceptable script.")
+        if script:
             script = script.format(label=predicted)
             await self.send_message(message.channel, script, message.author.id)
             return
@@ -122,9 +157,9 @@ class FaceRecognitionModule(IdolModuleBase):
         image = Image.fromarray(cv2.imdecode(image_array, cv2.IMREAD_COLOR))
         faces = self.model.triming_face(image)
         predicted = self.model.predict_faces(faces)
-        # print([self.model.classes[res] for res in predicted])
+        print([self.model.classes[res] for res in predicted])
         for res in predicted:
             idol_name = self.model.classes[res]
-            if self.translate_label(idol_name) is not None:
-                return idol_name
+            # if self.translate_label(idol_name) is not None:
+            return idol_name
         return None

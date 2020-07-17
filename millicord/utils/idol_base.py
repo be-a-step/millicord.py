@@ -55,7 +55,7 @@ class IdolBase(Client, IdolModuleBase):
             raise IdolSettingError('CZonfig \"{}\" is required.'.format(path))
         return item
 
-    def find_script(self, module: IdolModuleType, path: Path) -> str:
+    def find_script(self, module: IdolModuleType, path: Path) -> Any:
         """
         あるIdolModuleに紐づいたscriptを探索
 
