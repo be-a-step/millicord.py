@@ -39,7 +39,6 @@ class FaceRecognitionModule(IdolModuleBase):
             FaceRecognitionModule, "label_translator")
 
     def translate_label(self, label):
-        print(label)
         if self.label_translator is None:
             return label
         return self.label_translator.get(label)
@@ -94,7 +93,6 @@ class FaceRecognitionModule(IdolModuleBase):
         """
         predicted = None
         attachments = await self.extract_png_attachments(message)
-        print(attachments)
         if len(attachments) > 0:
             predicted = self.translate_label(await self.predict(attachments[0]))
         if predicted:
@@ -112,9 +110,7 @@ class FaceRecognitionModule(IdolModuleBase):
         for attachment in message.attachments:
             s.flush()
             await attachment.save(s, seek_begin=True)
-            print(attachment, imghdr.what(None, h=s.getvalue()))
             if imghdr.what(None, h=s.getvalue()) in ["png", "jpeg"]:
-                print(attachment)
                 rets.append(attachment)
         return rets
 
@@ -126,7 +122,9 @@ class FaceRecognitionModule(IdolModuleBase):
         image = Image.fromarray(cv2.imdecode(image_array, cv2.IMREAD_COLOR))
         faces = self.model.triming_face(image)
         predicted = self.model.predict_faces(faces)
-        if len(predicted) > 0:
-            print(predicted)
-            return self.model.classes[predicted[0]]
+        # print([self.model.classes[res] for res in predicted])
+        for res in predicted:
+            idol_name = self.model.classes[res]
+            if self.translate_label(idol_name) is not None:
+                return idol_name
         return None
