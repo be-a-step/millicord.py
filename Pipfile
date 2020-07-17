@@ -16,6 +16,7 @@ torch = {version = "==0.4.1",sys_platform = "== 'darwin'"}
 urllib3 = "*"
 pillow = "*"
 opencv-python = "*"
+click = "*"
 
 [requires]
 python_version = "3.7"

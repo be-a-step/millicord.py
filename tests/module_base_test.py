@@ -4,6 +4,8 @@ from millicord.utils.module_base import IdolModuleBase
 from pathlib import Path
 import asyncio
 
+from . import utils
+
 
 class SampleModule1(IdolModuleBase):
     async def on_ready_sub(self, s: str):
@@ -45,15 +47,14 @@ class TestIdol(IdolBase, SampleModule1, SampleModule2):
         raise Exception('raised in {}'.format(repr(event_method)))
 
 
-class TestModuleBase(unittest.TestCase):
+class TestModuleBase(utils.AsyncTestMixin, unittest.TestCase):
     def setUp(self):
-        self.loop = asyncio.new_event_loop()
+        super().setUp()
         self.idol_path = Path(__file__).parent / 'idols/module_base_test_idol/'
-        asyncio.set_event_loop(None)
         self.idol = TestIdol(
             script=None,
             config=None,
-            loop=self.loop)
+            loop=self.get_event_loop())
 
     def test_chain(self):
         with (self.idol_path / '.token').open() as f:
