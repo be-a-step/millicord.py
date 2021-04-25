@@ -43,7 +43,7 @@ jobs:
         REGISTRY: ${{ secrets.REGISTRY_URL }}
         BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
         BUILD_NUMBER: ${{ github.run_number }}
-      run:
+      run: |
         if docker manifest inspect ${REGISTRY}/${IMAGE_NAME}:${BRANCH_NAME}-latest > /dev/null ; then \
           echo "::set-output name=image::${REGISTRY}/${IMAGE_NAME}:${BRANCH_NAME}-latest"; \
         elif docker manifest inspect ${REGISTRY}/${IMAGE_NAME}:develop-latest > /dev/null ; then \
