@@ -72,8 +72,7 @@ jobs:
       with:
         context: .
         push: true
-        tags:
-        - ${{ secrets.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ steps.extract_branch.outputs.branch }}-latest
+        tags: ${{ secrets.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ steps.extract_branch.outputs.branch }}-latest
         cache-from: type=local,src=/tmp/.buildx-cache-test
         cache-to: type=local,dest=/tmp/.buildx-cache-new
 
@@ -84,9 +83,7 @@ jobs:
       with:
         context: .
         push: true
-        tags:
-        - ${{ secrets.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ steps.extract_branch.outputs.branch }}-latest
-        - ${{ secrets.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ steps.extract_branch.outputs.branch }}-${{ github.run_number }}
+        tags: ${{ secrets.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ steps.extract_branch.outputs.branch }}-latest, ${{ secrets.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ steps.extract_branch.outputs.branch }}-${{ github.run_number }}
         cache-from: type=local,src=/tmp/.buildx-cache-test
         cache-to: type=local,dest=/tmp/.buildx-cache-new
 
