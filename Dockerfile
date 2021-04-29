@@ -13,9 +13,8 @@ FROM millicord_base as build
 
 COPY . /app
 WORKDIR /app
-RUN pip install --no-cache-dir pipenv
-RUN pipenv install --system && \
-    pip install torch torchvision
+RUN pip install --no-cache-dir pipenv torch torchvision
+RUN pipenv install --system
 
 FROM build as develop
 
