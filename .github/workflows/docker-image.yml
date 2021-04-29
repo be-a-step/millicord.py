@@ -55,12 +55,6 @@ jobs:
         tags: ${{ secrets.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ steps.extract_branch.outputs.branch }}-test
         load: true
         cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-    - name: Move cache
-      run: |
-        rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
     - name: Test
       shell: bash
