@@ -1,0 +1,6 @@
+.eggs
+.venv
+.vscode
+.vs
+millicord.py.egg-info
+.env
