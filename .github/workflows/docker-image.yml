@@ -61,10 +61,15 @@ jobs:
         BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
         BUILD_NUMBER: ${{ github.run_number }}
         CACHED_IMAGE: ${{ steps.get_cached_image.output.image }}
+        CLASSES_URL: ${{ secrets.CLASSES_URL }}
+        DENSENET_URL: ${{ secrets.DENSENET_URL }}
+        RESNET_URL: ${{ secrets.RESNET_URL }}
       run: |
+        ./scripts/get_resources.sh
         declare -a build_args=()
         build_args=( "${build_args[@]}" --build-arg BUILDKIT_INLINE_CACHE=1)
         build_args=( "${build_args[@]}" -t ${REGISTRY}/${IMAGE_NAME}:${BRANCH_NAME}-latest )
+        build_args=( "${build_args[@]}" --target release )
         if [ "${BRANCH_NAME}" == "master" ] || [ "${BRANCH_NAME}" == "develop" ] ; then build_args=( "${build_args[@]}" -t ${REGISTRY}/${IMAGE_NAME}:${BRANCH_NAME}-${BUILD_NUMBER}) ; fi
         if [ "${CACHED_IMAGE}" != "none" ] ; then build_args=( "${build_args[@]}" --cache-from=${CACHED_IMAGE} ) ; fi
         docker build ${build_args[@]} .
