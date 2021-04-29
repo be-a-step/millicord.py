@@ -38,7 +38,7 @@ jobs:
         RESNET_URL: ${{ secrets.RESNET_URL }}
       run: ./scripts/get_resources.sh
 
-    - name: Build and Test
+    - name: Build
       shell: bash
       env:
         DOCKER_BUILDKIT: 1
