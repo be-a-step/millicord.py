@@ -1,15 +1,13 @@
 version: "3"
 services:
   millicord:
-    build: .
+    build:
+      context: .
+      target: develop
     container_name: millicord
     volumes:
       - ./:/millicord.py
     working_dir: /millicord.py
     tty: true
     command: >
-      bash -c "pipenv lock -r > /tmp/requirements.txt &&
-      pip install -r /tmp/requirements.txt &&
-      pip install torch torchvision &&
-      rm -f requirements.txt &&
-      /bin/bash"
+      /usr/bin/env bash

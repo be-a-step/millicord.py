@@ -16,6 +16,5 @@ before_install:
   - docker-compose up -d
 
 script:
-  - bash ./get_resources.sh
-  - while true ; do if [ `docker exec millicord pip freeze | grep torchvision ` ] ; then sleep 2; break ; fi; done
+  - bash ./scripts/get_resources.sh
   - docker exec millicord bash -c "python ./t_helper.py -t ${BOT_TOKEN} && python ./setup.py test"
