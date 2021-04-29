@@ -30,21 +30,6 @@ jobs:
       run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
       id: extract_branch
 
-    - name: Get cached image
-      env:
-        REGISTRY: ${{ secrets.REGISTRY_URL }}
-        BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
-        BUILD_NUMBER: ${{ github.run_number }}
-      run: |
-        if docker manifest inspect ${REGISTRY}/${IMAGE_NAME}:${BRANCH_NAME}-latest > /dev/null ; then \
-          echo "::set-output name=image::${REGISTRY}/${IMAGE_NAME}:${BRANCH_NAME}-latest"; \
-        elif docker manifest inspect ${REGISTRY}/${IMAGE_NAME}:develop-latest > /dev/null ; then \
-          echo "::set-output name=image::${REGISTRY}/${IMAGE_NAME}:develop-latest"; \
-        else \
-          echo "::set-output name=image::none"; \
-        fi
-      id: get_cached_image
-
     - name: Prepare resource
       shell: bash
       env:
@@ -60,10 +45,7 @@ jobs:
         REGISTRY: ${{ secrets.REGISTRY_URL }}
         BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
         BUILD_NUMBER: ${{ github.run_number }}
-        CACHED_IMAGE: ${{ steps.get_cached_image.outputs.image }}
-        BOT_TOKEN: ${{ secrets.TEST_BOT_TOKEN }}
       run: |
-        if [ "${CACHED_IMAGE}" != "none" ] ; then docker pull ${CACHED_IMAGE} ; fi
         declare -a build_args=()
         build_args=( "${build_args[@]}" --build-arg BUILDKIT_INLINE_CACHE=1)
         build_args=( "${build_args[@]}" -t ${REGISTRY}/${IMAGE_NAME}:${BRANCH_NAME}-test )
