@@ -30,21 +30,6 @@ jobs:
       run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
       id: extract_branch
 
-    - name: Get cached image
-      env:
-        REGISTRY: ${{ secrets.REGISTRY_URL }}
-        BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
-        BUILD_NUMBER: ${{ github.run_number }}
-      run: |
-        if docker manifest inspect ${REGISTRY}/${IMAGE_NAME}:${BRANCH_NAME}-latest > /dev/null ; then \
-          echo "::set-output name=image::${REGISTRY}/${IMAGE_NAME}:${BRANCH_NAME}-latest"; \
-        elif docker manifest inspect ${REGISTRY}/${IMAGE_NAME}:develop-latest > /dev/null ; then \
-          echo "::set-output name=image::${REGISTRY}/${IMAGE_NAME}:develop-latest"; \
-        else \
-          echo "::set-output name=image::none"; \
-        fi
-      id: get_cached_image
-
     - name: Prepare resource
       shell: bash
       env:
@@ -62,7 +47,6 @@ jobs:
         push: false
         tags: ${{ secrets.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ steps.extract_branch.outputs.branch }}-test
         load: true
-        cache-from: type=registry,ref=${{ steps.get_cached_image.outputs.image }}
 
     - name: Test
       shell: bash
@@ -82,7 +66,6 @@ jobs:
         target: release
         push: true
         tags: ${{ secrets.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ steps.extract_branch.outputs.branch }}-latest
-        cache-from: type=registry,ref=${{ steps.get_cached_image.outputs.image }}
 
     - name: Publish for main stream
       id: docker_publish_main
@@ -93,4 +76,3 @@ jobs:
         target: release
         push: true
         tags: ${{ secrets.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ steps.extract_branch.outputs.branch }}-latest, ${{ secrets.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:${{ steps.extract_branch.outputs.branch }}-${{ github.run_number }}
-        cache-from: type=registry,ref=${{ steps.get_cached_image.outputs.image }}
