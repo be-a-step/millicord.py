@@ -61,7 +61,7 @@ jobs:
         BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
         BOT_TOKEN: ${{ secrets.TEST_BOT_TOKEN }}
       run: |
-        docker run --rm ${REGISTRY}/${IMAGE_NAME}:${BRANCH_NAME}-test bash -c "python ./t_helper.py -t ${BOT_TOKEN} && pytest"
+        docker run --rm ${REGISTRY}/${IMAGE_NAME}:${BRANCH_NAME}-test bash -c "python ./t_helper.py -t ${BOT_TOKEN} && python -m pytest"
 
     - name: Publish
       shell: bash
