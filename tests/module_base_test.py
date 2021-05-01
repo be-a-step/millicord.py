@@ -4,7 +4,7 @@ from millicord.utils.module_base import IdolModuleBase
 from pathlib import Path
 import asyncio
 
-from . import utils
+from tests import utils
 
 
 class SampleModule1(IdolModuleBase):

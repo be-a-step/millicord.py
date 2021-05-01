@@ -7,7 +7,7 @@ from millicord.idol_builder import IdolBuilder
 from millicord.utils.setting import IdolConfig, IdolScript
 from pathlib import Path
 import copy
-from . import utils
+from tests import utils
 
 
 class SampleModule1(IdolModuleBase):
