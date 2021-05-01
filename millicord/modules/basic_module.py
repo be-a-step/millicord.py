@@ -205,7 +205,7 @@ class IdolStateModule(IdolModuleBase):
         ----------
         message : Message
         """
-        if not self.is_busy():
+        if self.is_busy():
             return
         sc = self.chain_super_coroutine('on_message', IdolStateModule)
         await sc(message)
