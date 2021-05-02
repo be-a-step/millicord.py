@@ -12,12 +12,13 @@ rope = "*"
 discord = "*"
 pyyaml = "*"
 numpy = "*"
-torch = {version = "==0.4.1",sys_platform = "== 'darwin'"}
+torch = {version = ">=1.8.1",sys_platform = "== 'darwin'"}
 urllib3 = "*"
 pillow = "*"
 opencv-python = "*"
 click = "*"
 pytest = "*"
+pytest-asyncio = "*"
 
 [requires]
 python_version = "3.7"
