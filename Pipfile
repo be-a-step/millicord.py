@@ -17,6 +17,7 @@ urllib3 = "*"
 pillow = "*"
 opencv-python = "*"
 click = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.7"

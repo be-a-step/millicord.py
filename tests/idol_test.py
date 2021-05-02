@@ -2,7 +2,7 @@ import unittest
 from millicord.utils.module_base import IdolModuleBase
 from pathlib import Path
 import shutil
-from . import utils
+from tests import utils
 
 
 class SampleModule1(IdolModuleBase):
